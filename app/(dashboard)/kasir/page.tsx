@@ -47,6 +47,9 @@ export default function KasirPage() {
   const [showReceipt, setShowReceipt] = useState(false)
   const [receipt, setReceipt] = useState<ReceiptData | null>(null)
 
+  // Mobile layout state
+  const [showMobileCart, setShowMobileCart] = useState(false)
+
   const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -110,7 +113,7 @@ export default function KasirPage() {
   const clearCart = () => setCart([])
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0)
-  const tax = Math.round(subtotal * 0.11)
+  const tax = 0
   const total = subtotal + tax
   const change = parseFloat(amountPaid || '0') - total
 
@@ -146,6 +149,7 @@ export default function KasirPage() {
 
       toast.success('Transaksi berhasil! 🎉')
       setShowCheckout(false)
+      setShowMobileCart(false)
       setShowReceipt(true)
       setCart([])
       setAmountPaid('')
@@ -165,9 +169,9 @@ export default function KasirPage() {
   const quickAmounts = [50000, 100000, 150000, 200000, 500000]
 
   return (
-    <div className="flex gap-6 h-[calc(100vh-7.5rem)]">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-[calc(100vh-5rem)] lg:h-[calc(100vh-7.5rem)] relative">
       {/* LEFT — Products */}
-      <div className="flex-1 flex flex-col gap-4 min-w-0">
+      <div className={`flex-1 flex-col gap-3 lg:gap-4 min-w-0 overflow-hidden ${showMobileCart ? 'hidden lg:flex' : 'flex'}`}>
         {/* Search + Category */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -198,7 +202,7 @@ export default function KasirPage() {
         </div>
 
         {/* Product Grid */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-16 lg:pb-0">
           {loading ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">Memuat produk...</div>
           ) : filteredProducts.length === 0 ? (
@@ -232,10 +236,27 @@ export default function KasirPage() {
             </div>
           )}
         </div>
+
+        {/* Mobile Floating View Cart Button */}
+        <div className="lg:hidden absolute bottom-0 left-0 right-0 p-3 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 z-10">
+          <Button 
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 shadow-lg font-bold text-base"
+            onClick={() => setShowMobileCart(true)}
+          >
+            Lihat Keranjang ({cart.reduce((a, i) => a + i.quantity, 0)}) • Rp {total.toLocaleString('id-ID')}
+          </Button>
+        </div>
       </div>
 
       {/* RIGHT — Cart */}
-      <div className="w-[380px] shrink-0 flex flex-col bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+      <div className={`w-full lg:w-[380px] shrink-0 flex-col bg-white dark:bg-zinc-900 lg:rounded-2xl shadow-xl lg:border lg:border-zinc-200 dark:lg:border-zinc-800 overflow-hidden ${showMobileCart ? 'flex' : 'hidden lg:flex'} h-full lg:h-auto z-20`}>
+        {/* Mobile Back Button */}
+        <div className="lg:hidden p-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex items-center">
+          <Button variant="ghost" className="h-8 gap-2 font-medium" onClick={() => setShowMobileCart(false)}>
+            <ArrowRight className="h-4 w-4 rotate-180" /> Kembali ke Daftar Produk
+          </Button>
+        </div>
+        
         {/* Cart Header */}
         <div className="p-4 border-b flex items-center justify-between bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-950/30 dark:to-indigo-950/30">
           <div className="flex items-center gap-2">
@@ -291,7 +312,7 @@ export default function KasirPage() {
         <div className="border-t p-4 bg-zinc-50 dark:bg-zinc-950 space-y-3">
           <div className="space-y-1 text-sm">
             <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>Rp {subtotal.toLocaleString('id-ID')}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">PPN 11%</span><span>Rp {tax.toLocaleString('id-ID')}</span></div>
+
             <div className="h-px bg-zinc-200 dark:bg-zinc-800 my-1" />
             <div className="flex justify-between items-center">
               <span className="font-bold text-lg">Total</span>
@@ -411,7 +432,7 @@ export default function KasirPage() {
 
                 <div className="border-t pt-2 space-y-1 text-sm">
                   <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>Rp {receipt.subtotal.toLocaleString('id-ID')}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">PPN 11%</span><span>Rp {receipt.tax_amount.toLocaleString('id-ID')}</span></div>
+
                   <div className="flex justify-between font-bold text-base border-t pt-1"><span>Total</span><span>Rp {receipt.total_amount.toLocaleString('id-ID')}</span></div>
                   <div className="flex justify-between"><span className="text-muted-foreground">Bayar ({paymentLabel(receipt.payment_method)})</span><span>Rp {receipt.amount_paid.toLocaleString('id-ID')}</span></div>
                   {receipt.payment_method === 'cash' && (

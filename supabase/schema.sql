@@ -214,7 +214,7 @@ BEGIN
   END LOOP;
 
   -- Calculate tax and total
-  v_tax := ROUND(v_subtotal * 0.11, 0);
+  v_tax := 0;
   v_total := v_subtotal + v_tax;
   v_change := p_amount_paid - v_total;
 

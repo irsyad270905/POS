@@ -152,7 +152,7 @@ export default function KasirHistoryPage() {
 
               <div className="space-y-1 text-sm border-t pt-3">
                 <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>Rp {Number(detailTxn.subtotal).toLocaleString('id-ID')}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">PPN (11%)</span><span>Rp {Number(detailTxn.tax_amount).toLocaleString('id-ID')}</span></div>
+
                 <div className="flex justify-between font-bold text-base border-t pt-2 mt-2"><span>Total</span><span>Rp {Number(detailTxn.total_amount).toLocaleString('id-ID')}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Dibayar ({paymentLabel(detailTxn.payment_method)})</span><span>Rp {Number(detailTxn.amount_paid).toLocaleString('id-ID')}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Kembalian</span><span>Rp {Number(detailTxn.change_amount).toLocaleString('id-ID')}</span></div>
