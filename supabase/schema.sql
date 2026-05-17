@@ -255,3 +255,22 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to delete transaction and restore stock safely
+CREATE OR REPLACE FUNCTION public.delete_transaction(p_transaction_id UUID)
+RETURNS VOID AS $$
+DECLARE
+  v_item RECORD;
+BEGIN
+  -- 1. Restore stock for all items in the transaction
+  FOR v_item IN SELECT product_id, quantity FROM transaction_items WHERE transaction_id = p_transaction_id
+  LOOP
+    UPDATE products 
+    SET stock = stock + v_item.quantity, updated_at = now()
+    WHERE id = v_item.product_id;
+  END LOOP;
+
+  -- 2. Delete the transaction (transaction_items are deleted via ON DELETE CASCADE)
+  DELETE FROM transactions WHERE id = p_transaction_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

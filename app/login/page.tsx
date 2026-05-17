@@ -53,38 +53,45 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-[#080d19] overflow-hidden relative">
+      {/* Animated Ambient Mesh Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] max-w-[600px] rounded-full bg-gradient-to-br from-emerald-500/8 to-teal-500/8 blur-[130px] animate-float-1" />
+        <div className="absolute top-[30%] left-[25%] w-[40vw] h-[40vw] max-w-[500px] rounded-full bg-violet-500/5 to-indigo-500/5 blur-[120px] animate-float-3" />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] max-w-[700px] rounded-full bg-gradient-to-br from-teal-500/8 to-emerald-500/5 blur-[150px] animate-float-2" />
+      </div>
+
       {/* Left Side — Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-zinc-950 items-center justify-center">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#0f1626]/40 border-r border-slate-800/40 items-center justify-center z-10">
         {/* Animated gradient background */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-600/30 via-indigo-600/20 to-cyan-500/30 animate-pulse" style={{ animationDuration: '4s' }} />
-          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-teal-600/5 to-indigo-500/10" />
+          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl" />
           {/* Grid pattern */}
-          <div className="absolute inset-0 opacity-10" style={{
+          <div className="absolute inset-0 opacity-[0.03]" style={{
             backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
             backgroundSize: '60px 60px'
           }} />
         </div>
         <div className="relative z-10 text-center px-12">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 mb-8 shadow-2xl">
-            <ShoppingBag className="h-12 w-12 text-white" />
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[#0f1626]/60 backdrop-blur-xl border border-emerald-500/30 mb-8 shadow-[0_8px_30px_rgba(16,185,129,0.15)]">
+            <ShoppingBag className="h-12 w-12 text-emerald-400 animate-pulse" />
           </div>
           <h1 className="text-6xl font-black text-white tracking-tight mb-4">
             AISh
           </h1>
-          <p className="text-xl text-white/60 font-medium mb-2">
+          <p className="text-xl text-slate-200 font-semibold mb-2">
             Point of Sale System
           </p>
-          <p className="text-sm text-white/40 max-w-sm mx-auto leading-relaxed">
+          <p className="text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
             Sistem kasir modern dengan manajemen inventori terintegrasi, transaksi atomik, dan laporan real-time.
           </p>
 
           {/* Feature badges */}
           <div className="flex flex-wrap justify-center gap-3 mt-10">
             {['Transaksi Aman', 'Stok Realtime', 'Laporan Otomatis'].map((feature) => (
-              <span key={feature} className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/70 text-xs font-medium">
+              <span key={feature} className="px-4 py-2 rounded-full bg-emerald-500/10 backdrop-blur-sm border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
                 {feature}
               </span>
             ))}
@@ -93,29 +100,29 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side — Login Form */}
-      <div className="flex flex-1 items-center justify-center bg-white dark:bg-zinc-950 p-6">
+      <div className="flex flex-1 items-center justify-center bg-[#0f1626]/30 backdrop-blur-xl p-6 z-10">
         <div className="w-full max-w-md space-y-8">
           {/* Mobile branding */}
           <div className="lg:hidden text-center mb-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-zinc-900 dark:bg-white mb-4">
-              <ShoppingBag className="h-8 w-8 text-white dark:text-zinc-900" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#0f1626] border border-slate-800 mb-4">
+              <ShoppingBag className="h-8 w-8 text-emerald-400" />
             </div>
-            <h1 className="text-3xl font-black tracking-tight">AISh POS</h1>
+            <h1 className="text-3xl font-black tracking-tight text-white">AISh POS</h1>
           </div>
 
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Selamat Datang</h2>
-            <p className="text-muted-foreground mt-2">Masukkan kredensial Anda untuk melanjutkan</p>
+            <h2 className="text-3xl font-extrabold tracking-tight text-white">Selamat Datang</h2>
+            <p className="text-slate-400 mt-2">Masukkan kredensial Anda untuk melanjutkan</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
+              <Label htmlFor="email" className="text-sm font-semibold text-slate-200">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="nama@perusahaan.com"
-                className="h-12 rounded-xl text-base"
+                className="h-12 rounded-xl text-base bg-[#0f1626]/80 border-slate-800 text-slate-100 placeholder:text-slate-500 focus-visible:ring-emerald-500/30 focus-visible:border-emerald-500/30"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -124,13 +131,13 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-semibold">Password</Label>
+              <Label htmlFor="password" className="text-sm font-semibold text-slate-200">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className="h-12 rounded-xl text-base pr-12"
+                  className="h-12 rounded-xl text-base pr-12 bg-[#0f1626]/80 border-slate-800 text-slate-100 placeholder:text-slate-500 focus-visible:ring-emerald-500/30 focus-visible:border-emerald-500/30"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -139,7 +146,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -149,7 +156,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full h-12 rounded-xl text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"
+              className="w-full h-12 rounded-xl text-base font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/20 border-0 transition-all duration-300 active:scale-[0.98]"
               disabled={loading}
             >
               {loading ? (
@@ -163,7 +170,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="text-center text-xs text-muted-foreground mt-8">
+          <p className="text-center text-xs text-slate-500 mt-8">
             AISh POS &copy; {new Date().getFullYear()} — All rights reserved
           </p>
         </div>
