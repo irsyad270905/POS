@@ -233,7 +233,7 @@ export default function KasirPage() {
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-[calc(100vh-5rem)] lg:h-[calc(100vh-7.5rem)] relative">
       {/* LEFT — Products */}
-      <div className={`flex-1 flex-col gap-3 lg:gap-4 min-w-0 overflow-hidden ${showMobileCart ? 'hidden lg:flex' : 'flex'}`}>
+      <div className={`relative flex-1 flex flex-col gap-3 lg:gap-4 min-w-0 overflow-hidden ${showMobileCart ? 'hidden lg:flex' : 'flex'}`}>
         {/* Search + Category */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -261,7 +261,7 @@ export default function KasirPage() {
         </div>
 
         {/* Product Grid */}
-        <div className="flex-1 overflow-y-auto pb-16 lg:pb-0">
+        <div className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {loading ? (
             <div className="flex items-center justify-center h-full text-[var(--text-secondary)] font-semibold">Memuat produk...</div>
           ) : filteredProducts.length === 0 ? (
