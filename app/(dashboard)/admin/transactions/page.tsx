@@ -80,7 +80,7 @@ export default function AdminTransactionsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Cari nomor invoice..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <Select value={filterPayment} onValueChange={setFilterPayment}>
+        <Select value={filterPayment} onValueChange={(val) => setFilterPayment(val || '')}>
           <SelectTrigger className="w-full sm:w-48"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua Metode</SelectItem>
