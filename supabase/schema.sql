@@ -117,13 +117,19 @@ CREATE POLICY "products_update" ON products FOR UPDATE TO authenticated
 CREATE POLICY "products_delete" ON products FOR DELETE TO authenticated
   USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin_inventory'));
 
--- Transactions: authenticated users can read all, only RPC inserts
-CREATE POLICY "transactions_select" ON transactions FOR SELECT TO authenticated USING (true);
-CREATE POLICY "transactions_insert" ON transactions FOR INSERT TO authenticated WITH CHECK (true);
+-- Transactions: admin sees all, kasir sees own; only RPC inserts (no direct INSERT)
+CREATE POLICY "transactions_select" ON transactions FOR SELECT TO authenticated
+USING (
+  cashier_id = auth.uid()
+  OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin_inventory')
+);
 
--- Transaction Items: authenticated users can read all, only RPC inserts
-CREATE POLICY "transaction_items_select" ON transaction_items FOR SELECT TO authenticated USING (true);
-CREATE POLICY "transaction_items_insert" ON transaction_items FOR INSERT TO authenticated WITH CHECK (true);
+-- Transaction Items: admin sees all, kasir sees their own items; only RPC inserts
+CREATE POLICY "transaction_items_select" ON transaction_items FOR SELECT TO authenticated
+USING (
+  EXISTS (SELECT 1 FROM transactions t WHERE t.id = transaction_id AND t.cashier_id = auth.uid())
+  OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin_inventory')
+);
 
 -- =====================================================
 -- FUNCTIONS
@@ -262,6 +268,11 @@ RETURNS VOID AS $$
 DECLARE
   v_item RECORD;
 BEGIN
+  -- 0. Only admin_inventory can delete transactions
+  IF NOT EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin_inventory') THEN
+    RAISE EXCEPTION 'Hanya admin_inventory yang dapat menghapus transaksi';
+  END IF;
+
   -- 1. Restore stock for all items in the transaction
   FOR v_item IN SELECT product_id, quantity FROM transaction_items WHERE transaction_id = p_transaction_id
   LOOP

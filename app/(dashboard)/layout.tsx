@@ -64,6 +64,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     loadUser()
   }, [supabase])
 
+  // Defence-in-depth: guard against role mismatch
+  useEffect(() => {
+    if (!role) return
+    const isAdminRoute = pathname.startsWith('/admin')
+    const isKasirRoute = pathname.startsWith('/kasir')
+    if (isAdminRoute && role !== 'admin_inventory') router.push('/kasir')
+    if (isKasirRoute && role !== 'kasir') router.push('/admin')
+  }, [role, pathname, router])
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
@@ -210,18 +219,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 hover:text-white" style={{ color: 'var(--text-secondary)' }} onClick={() => setMobileOpen(true)}>
               <Menu className="h-5 w-5" />
             </Button>
-            <h1 className="text-lg font-bold tracking-tight text-white hidden sm:block">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-white block">
               {menu.find(m => isActive(m.href))?.label || 'Dashboard'}
             </h1>
           </div>
-          <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-            <Clock className="h-4 w-4 animate-pulse" style={{ color: '#FF6B35' }} />
+          <div className="flex items-center gap-2 text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>
+            <Clock className="h-4 w-4 animate-pulse shrink-0" style={{ color: '#FF6B35' }} />
             <span className="font-mono tabular-nums text-slate-200">
               {mounted && currentTime ? (
                 <>
-                  {currentTime.toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
-                  {' • '}
-                  {currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  <span className="sm:hidden">
+                    {currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  <span className="hidden sm:inline">
+                    {currentTime.toLocaleDateString('id-ID', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
+                    {' • '}
+                    {currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </span>
                 </>
               ) : (
                 'Memuat...'
