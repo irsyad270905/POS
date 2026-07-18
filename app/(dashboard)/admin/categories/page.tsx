@@ -1,9 +1,6 @@
 'use client'
 
-// CHANGED: Redesigned the categories table list, colorful badge counts, action states, and header sizes
-// UNCHANGED: Supabase category queries, error handlers for linked products, dialog toggle states
-
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { Card } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -26,14 +23,11 @@ export default function AdminCategoriesPage() {
   const [name, setName] = useState('')
   const [productCounts, setProductCounts] = useState<Record<string, number>>({})
 
-  useEffect(() => { fetchCategories() }, [])
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     setLoading(true)
     const { data } = await supabase.from('categories').select('*').order('name')
     setCategories(data || [])
 
-    // Get product count per category
     const { data: products } = await supabase.from('products').select('category_id')
     const counts: Record<string, number> = {}
     products?.forEach(p => {
@@ -41,7 +35,15 @@ export default function AdminCategoriesPage() {
     })
     setProductCounts(counts)
     setLoading(false)
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    let active = true
+    setTimeout(() => {
+      if (active) fetchCategories()
+    }, 0)
+    return () => { active = false }
+  }, [fetchCategories])
 
   const resetForm = () => { setName(''); setEditingId(null) }
 

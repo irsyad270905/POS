@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* CHANGED: Redesigned whole design tokens & variables to use the Teal dark system */
+/* CHANGED: Redesigned whole design tokens & variables — Dark Orange Theme (referensi food app) */
 /* UNCHANGED: Custom floating animation keys & float utility wrappers */
 
 @custom-variant dark (&:is(.dark *));
@@ -52,19 +52,21 @@
 }
 
 :root {
-    /* SISTEM WARNA MANDATORY */
-    --bg-base: #0f172a;
-    --bg-surface: #1e293b;
-    --bg-card: #1e293b;
-    --bg-card-hover: #334155;
-    --accent-primary: #14b8a6;
-    --accent-secondary: #0d9488;
-    --accent-glow: rgba(20,184,166,0.15);
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #475569;
-    --border: rgba(255,255,255,0.08);
-    --success: #22c55e;
+    /* SISTEM WARNA — DARK ORANGE (Food App Theme) */
+    --bg-base: #111111;
+    --bg-surface: #1a1a1a;
+    --bg-card: #202020;
+    --bg-card-hover: #2a2a2a;
+    --accent-primary: #FF6B35;
+    --accent-secondary: #E85D27;
+    --accent-glow: rgba(255, 107, 53, 0.18);
+    --accent-warm: #FF8C42;
+    --text-primary: #f5f5f7;
+    --text-secondary: #9a9ba0;
+    --text-muted: #4a4b50;
+    --border: rgba(255, 255, 255, 0.07);
+    --border-orange: rgba(255, 107, 53, 0.25);
+    --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
     --info: #3b82f6;
@@ -141,7 +143,7 @@
     }
 }
 
-/* UTILITY CLASSES revamps */
+/* UTILITY CLASSES — Dark Orange Theme */
 .card {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
@@ -153,11 +155,11 @@
   background-color: var(--bg-card-hover);
   transform: translateY(-2px);
   box-shadow: 0 10px 30px -10px var(--accent-glow);
-  border-color: var(--accent-primary);
+  border-color: rgba(255, 107, 53, 0.35);
 }
 
 .stat-card {
-  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(30, 41, 59, 0.4) 100%);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(32, 32, 32, 0.4) 100%);
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   padding: 1.5rem;
@@ -168,29 +170,31 @@
 .stat-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px -8px var(--accent-glow);
-  border-color: var(--accent-primary);
+  border-color: rgba(255, 107, 53, 0.35);
 }
 
 .btn-primary {
-  background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 0.5rem;
   transition: all 200ms ease-out;
   border: none;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
 }
 .btn-primary:hover:not(:disabled) {
   filter: brightness(1.1);
-  box-shadow: 0 4px 12px var(--accent-glow);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.45);
+  transform: translateY(-1px);
 }
 .btn-primary:active:not(:disabled) {
   transform: scale(0.98);
 }
 
 .badge-success {
-  background-color: rgba(34, 197, 94, 0.1);
+  background-color: rgba(16, 185, 129, 0.1);
   color: var(--success);
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   font-weight: 600;
   border-radius: 9999px;
   padding: 0.25rem 0.5rem;
@@ -221,6 +225,15 @@
   font-size: 0.75rem;
   display: inline-flex;
   align-items: center;
+}
+
+/* Orange pulse glow animation */
+@keyframes orange-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 107, 53, 0.2); }
+  50%       { box-shadow: 0 0 24px rgba(255, 107, 53, 0.45); }
+}
+.animate-orange-glow {
+  animation: orange-glow 2.5s ease-in-out infinite;
 }
 
 @keyframes float-slow-1 {

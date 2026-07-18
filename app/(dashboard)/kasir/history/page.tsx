@@ -3,16 +3,14 @@
 // CHANGED: Redesigned the cashier history table elements, polished filters, and glass-based detail dialogs
 // UNCHANGED: Supabase transaction queries, role cashier validation states, detail items logic
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { Card } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { toast } from 'sonner'
 import { Receipt, Search, Eye } from 'lucide-react'
 
 type Transaction = {
@@ -34,9 +32,7 @@ export default function KasirHistoryPage() {
   const [detailTxn, setDetailTxn] = useState<Transaction | null>(null)
   const [detailItems, setDetailItems] = useState<TransactionItem[]>([])
 
-  useEffect(() => { fetchMyTransactions() }, [])
-
-  const fetchMyTransactions = async () => {
+  const fetchMyTransactions = useCallback(async () => {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -48,7 +44,15 @@ export default function KasirHistoryPage() {
       .order('created_at', { ascending: false })
     setTransactions(data || [])
     setLoading(false)
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    let active = true
+    setTimeout(() => {
+      if (active) fetchMyTransactions()
+    }, 0)
+    return () => { active = false }
+  }, [fetchMyTransactions])
 
   const openDetail = async (txn: Transaction) => {
     setDetailTxn(txn)
@@ -108,7 +112,14 @@ export default function KasirHistoryPage() {
           />
         </div>
         <Select value={filterDate} onValueChange={(val) => setFilterDate(val || 'all')}>
-          <SelectTrigger className="w-full sm:w-48 bg-[var(--bg-surface)] border-[var(--border)] text-[var(--text-primary)] rounded-xl h-11"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-48 bg-[var(--bg-surface)] border-[var(--border)] text-[var(--text-primary)] rounded-xl h-11">
+            <SelectValue placeholder="Semua Waktu">
+              {filterDate === 'all' && 'Semua Waktu'}
+              {filterDate === 'today' && 'Hari Ini'}
+              {filterDate === 'yesterday' && 'Kemarin'}
+              {filterDate === 'this_month' && 'Bulan Ini'}
+            </SelectValue>
+          </SelectTrigger>
           <SelectContent className="bg-[var(--bg-surface)] border-[var(--border)]">
             <SelectItem value="all" className="hover:bg-[var(--bg-card-hover)]">Semua Waktu</SelectItem>
             <SelectItem value="today" className="hover:bg-[var(--bg-card-hover)]">Hari Ini</SelectItem>

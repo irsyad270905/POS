@@ -6,7 +6,7 @@ import { createClient } from '@/utils/supabase/client'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Eye, EyeOff, ShoppingBag, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, ShoppingBag, Loader2, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function LoginPage() {
@@ -32,7 +32,6 @@ export default function LoginPage() {
       return
     }
 
-    // Get user role to redirect correctly
     if (data.user) {
       const { data: profile } = await supabase
         .from('profiles')
@@ -53,45 +52,69 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#080d19] overflow-hidden relative">
-      {/* Animated Ambient Mesh Background */}
+    <div className="flex min-h-screen overflow-hidden relative" style={{ background: '#111111' }}>
+      {/* Animated Ambient Orange Glow Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] max-w-[600px] rounded-full bg-gradient-to-br from-emerald-500/8 to-teal-500/8 blur-[130px] animate-float-1" />
-        <div className="absolute top-[30%] left-[25%] w-[40vw] h-[40vw] max-w-[500px] rounded-full bg-violet-500/5 to-indigo-500/5 blur-[120px] animate-float-3" />
-        <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] max-w-[700px] rounded-full bg-gradient-to-br from-teal-500/8 to-emerald-500/5 blur-[150px] animate-float-2" />
+        <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] max-w-[600px] rounded-full animate-float-1"
+          style={{ background: 'radial-gradient(circle, rgba(255,107,53,0.1) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] max-w-[700px] rounded-full animate-float-2"
+          style={{ background: 'radial-gradient(circle, rgba(232,93,39,0.08) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[40vw] max-w-[500px] rounded-full animate-float-3"
+          style={{ background: 'radial-gradient(circle, rgba(255,140,66,0.05) 0%, transparent 70%)', filter: 'blur(100px)' }} />
       </div>
 
       {/* Left Side — Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#0f1626]/40 border-r border-slate-800/40 items-center justify-center z-10">
-        {/* Animated gradient background */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center z-10"
+        style={{ background: 'rgba(26,26,26,0.7)', borderRight: '1px solid rgba(255,107,53,0.1)' }}>
+        {/* Left background effects */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-teal-600/5 to-indigo-500/10" />
-          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl" />
-          {/* Grid pattern */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(255,107,53,0.05) 0%, transparent 60%, rgba(232,93,39,0.04) 100%)' }} />
+          <div className="absolute top-1/4 -left-20 w-80 h-80 rounded-full"
+            style={{ background: 'rgba(255,107,53,0.08)', filter: 'blur(80px)' }} />
+          <div className="absolute bottom-1/4 -right-20 w-80 h-80 rounded-full"
+            style={{ background: 'rgba(232,93,39,0.06)', filter: 'blur(80px)' }} />
+          {/* Subtle grid */}
           <div className="absolute inset-0 opacity-[0.03]" style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
+            backgroundImage: 'linear-gradient(rgba(255,107,53,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,53,.3) 1px, transparent 1px)',
             backgroundSize: '60px 60px'
           }} />
         </div>
+
         <div className="relative z-10 text-center px-12">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-[#0f1626]/60 backdrop-blur-xl border border-emerald-500/30 mb-8 shadow-[0_8px_30px_rgba(16,185,129,0.15)]">
-            <ShoppingBag className="h-12 w-12 text-emerald-400 animate-pulse" />
+          {/* Logo icon */}
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-8"
+            style={{
+              background: 'rgba(26,26,26,0.9)',
+              border: '1px solid rgba(255,107,53,0.4)',
+              backdropFilter: 'blur(20px)',
+              boxShadow: '0 8px 40px rgba(255,107,53,0.2), inset 0 1px 0 rgba(255,107,53,0.15)'
+            }}>
+            <ShoppingBag className="h-12 w-12" style={{ color: '#FF6B35' }} />
           </div>
-          <h1 className="text-6xl font-black text-white tracking-tight mb-4">
+
+          <h1 className="text-6xl font-black tracking-tight mb-3" style={{ color: '#f5f5f7', letterSpacing: '-0.04em' }}>
             AISh
           </h1>
-          <p className="text-xl text-slate-200 font-semibold mb-2">
-            Point of Sale System
-          </p>
-          <p className="text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="h-px w-12" style={{ background: 'linear-gradient(to right, transparent, rgba(255,107,53,0.6))' }} />
+            <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#FF6B35' }}>Point of Sale</span>
+            <div className="h-px w-12" style={{ background: 'linear-gradient(to left, transparent, rgba(255,107,53,0.6))' }} />
+          </div>
+          <p className="text-sm max-w-sm mx-auto leading-relaxed" style={{ color: '#9a9ba0' }}>
             Sistem kasir modern dengan manajemen inventori terintegrasi, transaksi atomik, dan laporan real-time.
           </p>
 
           {/* Feature badges */}
           <div className="flex flex-wrap justify-center gap-3 mt-10">
             {['Transaksi Aman', 'Stok Realtime', 'Laporan Otomatis'].map((feature) => (
-              <span key={feature} className="px-4 py-2 rounded-full bg-emerald-500/10 backdrop-blur-sm border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+              <span key={feature} className="px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5"
+                style={{
+                  background: 'rgba(255,107,53,0.1)',
+                  border: '1px solid rgba(255,107,53,0.25)',
+                  color: '#FF8C42',
+                  backdropFilter: 'blur(8px)'
+                }}>
+                <Sparkles className="h-3 w-3" />
                 {feature}
               </span>
             ))}
@@ -100,29 +123,41 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side — Login Form */}
-      <div className="flex flex-1 items-center justify-center bg-[#0f1626]/30 backdrop-blur-xl p-6 z-10">
+      <div className="flex flex-1 items-center justify-center p-6 z-10"
+        style={{ background: 'rgba(17,17,17,0.7)', backdropFilter: 'blur(20px)' }}>
         <div className="w-full max-w-md space-y-8">
           {/* Mobile branding */}
           <div className="lg:hidden text-center mb-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#0f1626] border border-slate-800 mb-4">
-              <ShoppingBag className="h-8 w-8 text-emerald-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+              style={{ background: '#1a1a1a', border: '1px solid rgba(255,107,53,0.3)' }}>
+              <ShoppingBag className="h-8 w-8" style={{ color: '#FF6B35' }} />
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-white">AISh POS</h1>
+            <h1 className="text-3xl font-black tracking-tight" style={{ color: '#f5f5f7' }}>AISh POS</h1>
           </div>
 
+          {/* Header */}
           <div>
-            <h2 className="text-3xl font-extrabold tracking-tight text-white">Selamat Datang</h2>
-            <p className="text-slate-400 mt-2">Masukkan kredensial Anda untuk melanjutkan</p>
+            <h2 className="text-3xl font-extrabold tracking-tight" style={{ color: '#f5f5f7', letterSpacing: '-0.03em' }}>
+              Selamat Datang
+            </h2>
+            <p className="mt-2 text-sm" style={{ color: '#9a9ba0' }}>Masukkan kredensial Anda untuk melanjutkan</p>
+            <div className="mt-4 h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #FF6B35, #E85D27)' }} />
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
+            {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-semibold text-slate-200">Email</Label>
+              <Label htmlFor="email" className="text-sm font-semibold" style={{ color: '#f5f5f7' }}>Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="nama@perusahaan.com"
-                className="h-12 rounded-xl text-base bg-[#0f1626]/80 border-slate-800 text-slate-100 placeholder:text-slate-500 focus-visible:ring-emerald-500/30 focus-visible:border-emerald-500/30"
+                className="h-12 rounded-xl text-base transition-all duration-200"
+                style={{
+                  background: 'rgba(26,26,26,0.9)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  color: '#f5f5f7',
+                }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -130,14 +165,21 @@ export default function LoginPage() {
                 autoFocus
               />
             </div>
+
+            {/* Password */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-semibold text-slate-200">Password</Label>
+              <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#f5f5f7' }}>Password</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className="h-12 rounded-xl text-base pr-12 bg-[#0f1626]/80 border-slate-800 text-slate-100 placeholder:text-slate-500 focus-visible:ring-emerald-500/30 focus-visible:border-emerald-500/30"
+                  className="h-12 rounded-xl text-base pr-12 transition-all duration-200"
+                  style={{
+                    background: 'rgba(26,26,26,0.9)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: '#f5f5f7',
+                  }}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -146,7 +188,8 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: '#9a9ba0' }}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -154,9 +197,15 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full h-12 rounded-xl text-base font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/20 border-0 transition-all duration-300 active:scale-[0.98]"
+              className="w-full h-12 rounded-xl text-base font-bold border-0 transition-all duration-300 active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, #FF6B35 0%, #E85D27 100%)',
+                color: '#ffffff',
+                boxShadow: '0 4px 20px rgba(255,107,53,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+              }}
               disabled={loading}
             >
               {loading ? (
@@ -170,7 +219,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="text-center text-xs text-slate-500 mt-8">
+          <p className="text-center text-xs mt-8" style={{ color: '#4a4b50' }}>
             AISh POS &copy; {new Date().getFullYear()} — All rights reserved
           </p>
         </div>

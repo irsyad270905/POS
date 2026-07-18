@@ -1,19 +1,15 @@
 'use client'
 
-// CHANGED: Redesigned the transaction history page with a custom top summary strip, method badges, clean detail modals, and polished search fields
-// UNCHANGED: Supabase fetch logics, CSV exporting triggers, schema delete validations
-
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { Card } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { Receipt, Search, Eye, Trash2, Download, TrendingUp, HelpCircle, FileSpreadsheet } from 'lucide-react'
+import { Receipt, Search, Eye, Trash2, FileSpreadsheet } from 'lucide-react'
 import * as XLSX from 'xlsx'
 
 type Transaction = {
@@ -43,17 +39,23 @@ export default function AdminTransactionsPage() {
   const [detailTxn, setDetailTxn] = useState<Transaction | null>(null)
   const [detailItems, setDetailItems] = useState<TransactionItem[]>([])
 
-  useEffect(() => { fetchTransactions() }, [])
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true)
     const { data } = await supabase
       .from('transactions')
       .select('*, profiles(full_name, email)')
       .order('created_at', { ascending: false })
-    setTransactions((data as any) || [])
+    setTransactions((data as unknown as Transaction[]) || [])
     setLoading(false)
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    let active = true
+    setTimeout(() => {
+      if (active) fetchTransactions()
+    }, 0)
+    return () => { active = false }
+  }, [fetchTransactions])
 
   const openDetail = async (txn: Transaction) => {
     setDetailTxn(txn)
@@ -88,42 +90,31 @@ export default function AdminTransactionsPage() {
     const headers = ['Invoice', 'Kasir', 'Metode Pembayaran', 'Total', 'Waktu']
     const rows = filtered.map(t => [
       t.invoice_number,
-      (t.profiles as any)?.full_name || (t.profiles as any)?.email || '',
+      t.profiles?.full_name || t.profiles?.email || '',
       paymentLabel(t.payment_method),
-      t.total_amount, // true numeric values so Excel can calculate sums and averages!
+      t.total_amount,
       new Date(t.created_at).toLocaleString('id-ID').replace(',', '')
     ])
-
-    // Combine headers and rows for SheetJS
     const worksheetData = [headers, ...rows]
-    
-    // Create sheet and workbook
     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Laporan Transaksi')
-    
-    // Auto-fit column widths professionally
-    const maxLens = headers.map((h, i) => {
-      return Math.max(h.length, ...rows.map(row => String(row[i] || '').length))
-    })
+    const maxLens = headers.map((h, i) => Math.max(h.length, ...rows.map(row => String(row[i] || '').length)))
     worksheet['!cols'] = maxLens.map(len => ({ wch: len + 3 }))
-
-    // Generate XLSX file and trigger native direct download
     XLSX.writeFile(workbook, `Laporan_Transaksi_${new Date().toLocaleDateString('id-ID').replace(/\//g, '-')}.xlsx`)
     toast.success('Laporan Excel berhasil diunduh! 📊')
   }
 
-
   const handleDelete = async (id: string) => {
-    if (!confirm('Yakin ingin menghapus transaksi ini? Stok produk akan dikembalikan secara otomatis.')) return;
+    if (!confirm('Yakin ingin menghapus transaksi ini? Stok produk akan dikembalikan secara otomatis.')) return
     try {
-      const { error } = await supabase.rpc('delete_transaction', { p_transaction_id: id });
-      if (error) throw error;
-      toast.success('Transaksi berhasil dihapus dan stok dikembalikan.');
-      setDetailTxn(null);
-      fetchTransactions();
-    } catch (err: any) {
-      toast.error('Gagal menghapus: ' + err.message);
+      const { error } = await supabase.rpc('delete_transaction', { p_transaction_id: id })
+      if (error) throw error
+      toast.success('Transaksi berhasil dihapus dan stok dikembalikan.')
+      setDetailTxn(null)
+      fetchTransactions()
+    } catch (err: unknown) {
+      toast.error('Gagal menghapus: ' + (err instanceof Error ? err.message : String(err)))
     }
   }
 
@@ -133,16 +124,12 @@ export default function AdminTransactionsPage() {
 
   const getPaymentBadge = (method: string) => {
     switch (method) {
-      case 'cash':
-        return 'badge-success'
-      case 'qris':
-        return 'badge-warning'
-      default:
-        return 'badge-danger'
+      case 'cash': return 'badge-success'
+      case 'qris': return 'badge-warning'
+      default: return 'badge-danger'
     }
   }
 
-  // Summary strip computations
   const now = new Date()
   const todayTxns = transactions.filter(t => new Date(t.created_at).toDateString() === now.toDateString())
   const totalToday = todayTxns.reduce((sum, t) => sum + Number(t.total_amount), 0)
@@ -185,7 +172,14 @@ export default function AdminTransactionsPage() {
           />
         </div>
         <Select value={filterDate} onValueChange={(val) => setFilterDate(val || 'all')}>
-          <SelectTrigger className="w-full sm:w-40 bg-[var(--bg-surface)] border-[var(--border)] text-[var(--text-primary)] rounded-xl h-11"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40 bg-[var(--bg-surface)] border-[var(--border)] text-[var(--text-primary)] rounded-xl h-11">
+            <SelectValue>
+              {filterDate === 'all' && 'Semua Waktu'}
+              {filterDate === 'today' && 'Hari Ini'}
+              {filterDate === 'yesterday' && 'Kemarin'}
+              {filterDate === 'this_month' && 'Bulan Ini'}
+            </SelectValue>
+          </SelectTrigger>
           <SelectContent className="bg-[var(--bg-surface)] border-[var(--border)]">
             <SelectItem value="all" className="hover:bg-[var(--bg-card-hover)]">Semua Waktu</SelectItem>
             <SelectItem value="today" className="hover:bg-[var(--bg-card-hover)]">Hari Ini</SelectItem>
@@ -193,8 +187,15 @@ export default function AdminTransactionsPage() {
             <SelectItem value="this_month" className="hover:bg-[var(--bg-card-hover)]">Bulan Ini</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={filterPayment} onValueChange={(val) => setFilterPayment(val || '')}>
-          <SelectTrigger className="w-full sm:w-40 bg-[var(--bg-surface)] border-[var(--border)] text-[var(--text-primary)] rounded-xl h-11"><SelectValue /></SelectTrigger>
+        <Select value={filterPayment} onValueChange={(val) => setFilterPayment(val || 'all')}>
+          <SelectTrigger className="w-full sm:w-40 bg-[var(--bg-surface)] border-[var(--border)] text-[var(--text-primary)] rounded-xl h-11">
+            <SelectValue>
+              {filterPayment === 'all' && 'Semua Metode'}
+              {filterPayment === 'cash' && 'Tunai'}
+              {filterPayment === 'qris' && 'QRIS'}
+              {filterPayment === 'transfer' && 'Transfer'}
+            </SelectValue>
+          </SelectTrigger>
           <SelectContent className="bg-[var(--bg-surface)] border-[var(--border)]">
             <SelectItem value="all" className="hover:bg-[var(--bg-card-hover)]">Semua Metode</SelectItem>
             <SelectItem value="cash" className="hover:bg-[var(--bg-card-hover)]">Tunai</SelectItem>
@@ -237,11 +238,9 @@ export default function AdminTransactionsPage() {
                 filtered.map((t) => (
                   <TableRow key={t.id} className="group hover:bg-[var(--bg-card-hover)]/30 transition-colors border-b border-[var(--border)] even:bg-[var(--bg-card)]/10">
                     <TableCell className="font-mono text-sm font-bold text-[var(--accent-primary)]">{t.invoice_number}</TableCell>
-                    <TableCell className="text-sm font-semibold text-slate-200">{(t.profiles as any)?.full_name || (t.profiles as any)?.email || '—'}</TableCell>
+                    <TableCell className="text-sm font-semibold text-slate-200">{t.profiles?.full_name || t.profiles?.email || '—'}</TableCell>
                     <TableCell>
-                      <span className={getPaymentBadge(t.payment_method)}>
-                        {paymentLabel(t.payment_method)}
-                      </span>
+                      <span className={getPaymentBadge(t.payment_method)}>{paymentLabel(t.payment_method)}</span>
                     </TableCell>
                     <TableCell className="text-right font-black text-slate-100">
                       Rp {Number(t.total_amount).toLocaleString('id-ID')}
@@ -251,22 +250,14 @@ export default function AdminTransactionsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-1.5">
-                        <Button
-                          variant="ghost"
-                          size="icon"
+                        <Button variant="ghost" size="icon"
                           className="h-8 w-8 text-[var(--info)] hover:text-white hover:bg-[var(--info)]/20 transition-all rounded-lg active:scale-90 border border-transparent hover:border-[var(--info)]/30"
-                          onClick={() => openDetail(t)}
-                          title="Detail Transaksi"
-                        >
+                          onClick={() => openDetail(t)} title="Detail Transaksi">
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
+                        <Button variant="ghost" size="icon"
                           className="h-8 w-8 text-[var(--danger)] hover:text-white hover:bg-[var(--danger)]/20 transition-all rounded-lg active:scale-90 border border-transparent hover:border-[var(--danger)]/30"
-                          onClick={() => handleDelete(t.id)}
-                          title="Hapus Transaksi"
-                        >
+                          onClick={() => handleDelete(t.id)} title="Hapus Transaksi">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -291,13 +282,9 @@ export default function AdminTransactionsPage() {
                 <div className="text-[var(--text-secondary)] font-medium">Invoice</div>
                 <div className="font-mono font-bold text-[var(--accent-primary)]">{detailTxn.invoice_number}</div>
                 <div className="text-[var(--text-secondary)] font-medium">Kasir</div>
-                <div className="font-semibold text-slate-200">{(detailTxn.profiles as any)?.full_name || '—'}</div>
+                <div className="font-semibold text-slate-200">{detailTxn.profiles?.full_name || '—'}</div>
                 <div className="text-[var(--text-secondary)] font-medium">Metode</div>
-                <div>
-                  <span className={getPaymentBadge(detailTxn.payment_method)}>
-                    {paymentLabel(detailTxn.payment_method)}
-                  </span>
-                </div>
+                <div><span className={getPaymentBadge(detailTxn.payment_method)}>{paymentLabel(detailTxn.payment_method)}</span></div>
                 <div className="text-[var(--text-secondary)] font-medium">Waktu</div>
                 <div className="text-slate-200">{new Date(detailTxn.created_at).toLocaleString('id-ID')}</div>
               </div>

@@ -1,0 +1,326 @@
+
+> belajar-nextjs@0.1.0 lint
+> eslint
+
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\categories\page.tsx
+  29:21  error    Error: Cannot access variable before it is declared
+
+`fetchCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\categories\page.tsx:29:21
+  27 |   const [productCounts, setProductCounts] = useState<Record<string, number>>({})
+  28 |
+> 29 |   useEffect(() => { fetchCategories() }, [])
+     |                     ^^^^^^^^^^^^^^^ `fetchCategories` accessed before it is declared
+  30 |
+  31 |   const fetchCategories = async () => {
+  32 |     setLoading(true)
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\categories\page.tsx:31:3
+  29 |   useEffect(() => { fetchCategories() }, [])
+  30 |
+> 31 |   const fetchCategories = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |     setLoading(true)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 33 |     const { data } = await supabase.from('categories').select('*').order('name')
+     …
+     | ^^^^^^^^^^^^^^^^^^^^
+> 43 |     setLoading(false)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 44 |   }
+     | ^^^^ `fetchCategories` is declared here
+  45 |
+  46 |   const resetForm = () => { setName(''); setEditingId(null) }
+  47 |  react-hooks/immutability
+  29:42  warning  React Hook useEffect has a missing dependency: 'fetchCategories'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\page.tsx
+   44:5   error    Error: Cannot access variable before it is declared
+
+`fetchDashboardData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\page.tsx:44:5
+  42 |
+  43 |   useEffect(() => {
+> 44 |     fetchDashboardData()
+     |     ^^^^^^^^^^^^^^^^^^ `fetchDashboardData` accessed before it is declared
+  45 |   }, [])
+  46 |
+  47 |   const fetchDashboardData = async () => {
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\page.tsx:47:3
+  45 |   }, [])
+  46 |
+> 47 |   const fetchDashboardData = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 |     setLoading(true)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 49 |     const todayStart = new Date()
+     …
+     | ^^^^^^^^^^^^^^^^^^^^
+> 86 |     setLoading(false)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 87 |   }
+     | ^^^^ `fetchDashboardData` is declared here
+  88 |
+  89 |   const statCards: StatCard[] = [
+  90 |     {  react-hooks/immutability
+   45:6   warning  React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+   85:30  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  217:41  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  217:77  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\products\page.tsx
+    8:16  warning  'CardContent' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   45:5   error    Error: Cannot access variable before it is declared
+
+`fetchProducts` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\products\page.tsx:45:5
+  43 |
+  44 |   useEffect(() => {
+> 45 |     fetchProducts()
+     |     ^^^^^^^^^^^^^ `fetchProducts` accessed before it is declared
+  46 |     fetchCategories()
+  47 |   }, [])
+  48 |
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\products\page.tsx:54:3
+  52 |   }
+  53 |
+> 54 |   const fetchProducts = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 55 |     setLoading(true)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 56 |     const { data, error } = await supabase
+     | ^^^^^^^^^^^^^^^^^^^^
+> 57 |       .from('products')
+     | ^^^^^^^^^^^^^^^^^^^^
+> 58 |       .select('*, categories(name)')
+     | ^^^^^^^^^^^^^^^^^^^^
+> 59 |       .order('created_at', { ascending: false })
+     | ^^^^^^^^^^^^^^^^^^^^
+> 60 |     if (error) toast.error('Gagal mengambil data produk')
+     | ^^^^^^^^^^^^^^^^^^^^
+> 61 |     else setProducts((data as any) || [])
+     | ^^^^^^^^^^^^^^^^^^^^
+> 62 |     setLoading(false)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 63 |   }
+     | ^^^^ `fetchProducts` is declared here
+  64 |
+  65 |   const resetForm = () => {
+  66 |     setName(''); setSku(''); setBarcode(''); setPrice(''); setStock(''); setCategoryId(''); setEditingId(null)  react-hooks/immutability
+   46:5   error    Error: Cannot access variable before it is declared
+
+`fetchCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\products\page.tsx:46:5
+  44 |   useEffect(() => {
+  45 |     fetchProducts()
+> 46 |     fetchCategories()
+     |     ^^^^^^^^^^^^^^^ `fetchCategories` accessed before it is declared
+  47 |   }, [])
+  48 |
+  49 |   const fetchCategories = async () => {
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\products\page.tsx:49:3
+  47 |   }, [])
+  48 |
+> 49 |   const fetchCategories = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 50 |     const { data } = await supabase.from('categories').select('*').order('name')
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 51 |     setCategories(data || [])
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 52 |   }
+     | ^^^^ `fetchCategories` is declared here
+  53 |
+  54 |   const fetchProducts = async () => {
+  55 |     setLoading(true)                                                                                                                                                                                                                                                                                                            react-hooks/immutability
+   47:6   warning  React Hook useEffect has missing dependencies: 'fetchCategories' and 'fetchProducts'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+   61:31  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+  122:20  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\transactions\page.tsx
+   12:10   warning  'Badge' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   16:40   warning  'Download' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   16:50   warning  'TrendingUp' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   16:62   warning  'HelpCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   46:21   error    Error: Cannot access variable before it is declared
+
+`fetchTransactions` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\transactions\page.tsx:46:21
+  44 |   const [detailItems, setDetailItems] = useState<TransactionItem[]>([])
+  45 |
+> 46 |   useEffect(() => { fetchTransactions() }, [])
+     |                     ^^^^^^^^^^^^^^^^^ `fetchTransactions` accessed before it is declared
+  47 |
+  48 |   const fetchTransactions = async () => {
+  49 |     setLoading(true)
+
+C:\Belajar Nextjs\POS\app\(dashboard)\admin\transactions\page.tsx:48:3
+  46 |   useEffect(() => { fetchTransactions() }, [])
+  47 |
+> 48 |   const fetchTransactions = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |     setLoading(true)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 50 |     const { data } = await supabase
+     | ^^^^^^^^^^^^^^^^^^^^
+> 51 |       .from('transactions')
+     | ^^^^^^^^^^^^^^^^^^^^
+> 52 |       .select('*, profiles(full_name, email)')
+     | ^^^^^^^^^^^^^^^^^^^^
+> 53 |       .order('created_at', { ascending: false })
+     | ^^^^^^^^^^^^^^^^^^^^
+> 54 |     setTransactions((data as any) || [])
+     | ^^^^^^^^^^^^^^^^^^^^
+> 55 |     setLoading(false)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 56 |   }
+     | ^^^^ `fetchTransactions` is declared here
+  57 |
+  58 |   const openDetail = async (txn: Transaction) => {
+  59 |     setDetailTxn(txn)  react-hooks/immutability
+   46:44   warning  React Hook useEffect has a missing dependency: 'fetchTransactions'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+   54:30   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+   91:22   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+   91:56   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  125:19   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  254:97   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  254:131  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  308:87   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+
+C:\Belajar Nextjs\POS\app\(dashboard)\kasir\history\page.tsx
+  12:10  warning  'Badge' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  15:10  warning  'toast' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  37:21  error    Error: Cannot access variable before it is declared
+
+`fetchMyTransactions` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Belajar Nextjs\POS\app\(dashboard)\kasir\history\page.tsx:37:21
+  35 |   const [detailItems, setDetailItems] = useState<TransactionItem[]>([])
+  36 |
+> 37 |   useEffect(() => { fetchMyTransactions() }, [])
+     |                     ^^^^^^^^^^^^^^^^^^^ `fetchMyTransactions` accessed before it is declared
+  38 |
+  39 |   const fetchMyTransactions = async () => {
+  40 |     setLoading(true)
+
+C:\Belajar Nextjs\POS\app\(dashboard)\kasir\history\page.tsx:39:3
+  37 |   useEffect(() => { fetchMyTransactions() }, [])
+  38 |
+> 39 |   const fetchMyTransactions = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     setLoading(true)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 41 |     const { data: { user } } = await supabase.auth.getUser()
+     …
+     | ^^^^^^^^^^^^^^^^^^^^
+> 50 |     setLoading(false)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 51 |   }
+     | ^^^^ `fetchMyTransactions` is declared here
+  52 |
+  53 |   const openDetail = async (txn: Transaction) => {
+  54 |     setDetailTxn(txn)  react-hooks/immutability
+  37:46  warning  React Hook useEffect has a missing dependency: 'fetchMyTransactions'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+C:\Belajar Nextjs\POS\app\(dashboard)\kasir\page.tsx
+   60:5   error    Error: Cannot access variable before it is declared
+
+`fetchProducts` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Belajar Nextjs\POS\app\(dashboard)\kasir\page.tsx:60:5
+  58 |
+  59 |   useEffect(() => {
+> 60 |     fetchProducts()
+     |     ^^^^^^^^^^^^^ `fetchProducts` accessed before it is declared
+  61 |     fetchCategories()
+  62 |     // Keyboard shortcut: F2 focus search
+  63 |     const handler = (e: KeyboardEvent) => {
+
+C:\Belajar Nextjs\POS\app\(dashboard)\kasir\page.tsx:75:3
+  73 |   }
+  74 |
+> 75 |   const fetchProducts = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 76 |     setLoading(true)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 77 |     const { data } = await supabase
+     | ^^^^^^^^^^^^^^^^^^^^
+> 78 |       .from('products')
+     | ^^^^^^^^^^^^^^^^^^^^
+> 79 |       .select('*, categories(name)')
+     | ^^^^^^^^^^^^^^^^^^^^
+> 80 |       .gt('stock', 0)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 81 |       .order('name')
+     | ^^^^^^^^^^^^^^^^^^^^
+> 82 |     setProducts((data as any) || [])
+     | ^^^^^^^^^^^^^^^^^^^^
+> 83 |     setLoading(false)
+     | ^^^^^^^^^^^^^^^^^^^^
+> 84 |   }
+     | ^^^^ `fetchProducts` is declared here
+  85 |
+  86 |   const filteredProducts = products.filter(p => {
+  87 |     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase())  react-hooks/immutability
+   61:5   error    Error: Cannot access variable before it is declared
+
+`fetchCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Belajar Nextjs\POS\app\(dashboard)\kasir\page.tsx:61:5
+  59 |   useEffect(() => {
+  60 |     fetchProducts()
+> 61 |     fetchCategories()
+     |     ^^^^^^^^^^^^^^^ `fetchCategories` accessed before it is declared
+  62 |     // Keyboard shortcut: F2 focus search
+  63 |     const handler = (e: KeyboardEvent) => {
+  64 |       if (e.key === 'F2') { e.preventDefault(); searchRef.current?.focus() }
+
+C:\Belajar Nextjs\POS\app\(dashboard)\kasir\page.tsx:70:3
+  68 |   }, [])
+  69 |
+> 70 |   const fetchCategories = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |     const { data } = await supabase.from('categories').select('*').order('name')
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 72 |     setCategories(data || [])
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 73 |   }
+     | ^^^^ `fetchCategories` is declared here
+  74 |
+  75 |   const fetchProducts = async () => {
+  76 |     setLoading(true)                                                                                                                                                                                                                                    react-hooks/immutability
+   68:6   warning  React Hook useEffect has missing dependencies: 'fetchCategories' and 'fetchProducts'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+   82:26  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  180:19  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+
+C:\Belajar Nextjs\POS\app\(dashboard)\layout.tsx
+  37:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Belajar Nextjs\POS\app\(dashboard)\layout.tsx:37:5
+  35 |
+  36 |   useEffect(() => {
+> 37 |     setMounted(true)
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |     setCurrentTime(new Date())
+  39 |     const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+  40 |     return () => clearInterval(timer)  react-hooks/set-state-in-effect
+
+C:\Belajar Nextjs\POS\utils\supabase\server.ts
+  20:20  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 37 problems (23 errors, 14 warnings)
+
