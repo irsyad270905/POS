@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: aish-pos-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    restart: unless-stopped
