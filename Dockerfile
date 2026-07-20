@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -20,6 +20,10 @@ COPY . .
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_SUPABASE_URL=https://tpiaqtdxeufrhsqdxpfw.supabase.co
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwaWFxdGR4ZXVmcmhzcWR4cGZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5ODEzNDgsImV4cCI6MjA5NDU1NzM0OH0.03WNriV47LhS1mzHwjzMw6fR6AaMhMCTGKhzZ6Z311I
+ENV SUPABASE_SERVICE_ROLE_KEY=dummy-key-for-build
+ENV GROQ_API_KEY=dummy-key-for-build
 
 RUN npm run build
 

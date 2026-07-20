@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 // CHANGED: Updated all color tokens from gold to orange, product cards now show product images, category filter redesigned
 // UNCHANGED: Supabase checkout calculations, quick amounts lists, print window triggers, searchRef keys
 

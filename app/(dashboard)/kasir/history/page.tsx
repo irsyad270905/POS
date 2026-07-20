@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 // CHANGED: Redesigned the cashier history table elements, polished filters, and glass-based detail dialogs
 // UNCHANGED: Supabase transaction queries, role cashier validation states, detail items logic
 
