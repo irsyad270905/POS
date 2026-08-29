@@ -37,6 +37,8 @@ export async function GET(request: NextRequest) {
       barcode: p.barcode,
       harga: Number(p.price),
       stok: p.stock,
+      satuan: p.unit || 'pcs',
+      unit: p.unit || 'pcs',
       kategori: p.categories?.name || null,
       image_url: p.image_url,
       created_at: p.created_at,
@@ -141,17 +143,33 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const { data, error } = await supabase
+    const unit = body.satuan || body.unit || 'pcs';
+
+    let insertData: Record<string, any> = {
+      name: nama,
+      sku,
+      price: Number(harga),
+      stock: Number(stok),
+      unit: unit.trim().toLowerCase(),
+      category_id: categoryId,
+    };
+
+    let { data, error } = await supabase
       .from("products")
-      .insert({
-        name: nama,
-        sku,
-        price: Number(harga),
-        stock: Number(stok),
-        category_id: categoryId,
-      })
+      .insert(insertData)
       .select("*, categories(name)")
       .single();
+
+    if (error && (error.message.includes("'unit'") || error.message.includes("schema cache"))) {
+      const { unit: _u, ...fallbackData } = insertData;
+      const retry = await supabase
+        .from("products")
+        .insert(fallbackData)
+        .select("*, categories(name)")
+        .single();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
@@ -165,6 +183,8 @@ export async function POST(request: NextRequest) {
           sku: data.sku,
           harga: Number(data.price),
           stok: data.stock,
+          satuan: data.unit || 'pcs',
+          unit: data.unit || 'pcs',
           kategori: data.categories?.name || kategori || null,
         },
       },

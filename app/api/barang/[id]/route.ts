@@ -32,6 +32,8 @@ export async function GET(request: NextRequest, { params }: any) {
         barcode: data.barcode,
         harga: Number(data.price),
         stok: data.stock,
+        satuan: data.unit || 'pcs',
+        unit: data.unit || 'pcs',
         kategori: data.categories?.name || null,
         image_url: data.image_url,
       },
@@ -53,6 +55,9 @@ export async function PUT(request: NextRequest, { params }: any) {
     if (body.harga !== undefined) updateData.price = Number(body.harga);
     if (body.stok !== undefined) updateData.stock = Number(body.stok);
     if (body.barcode !== undefined) updateData.barcode = body.barcode;
+    if (body.satuan !== undefined || body.unit !== undefined) {
+      updateData.unit = (body.satuan || body.unit || 'pcs').toString().trim().toLowerCase();
+    }
 
     if (body.kategori !== undefined) {
       if (body.kategori) {
@@ -73,12 +78,24 @@ export async function PUT(request: NextRequest, { params }: any) {
 
     updateData.updated_at = new Date().toISOString();
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("products")
       .update(updateData)
       .eq("id", id)
       .select("*, categories(name)")
       .single();
+
+    if (error && (error.message.includes("'unit'") || error.message.includes("schema cache"))) {
+      const { unit: _u, ...fallbackUpdateData } = updateData;
+      const retry = await supabase
+        .from("products")
+        .update(fallbackUpdateData)
+        .eq("id", id)
+        .select("*, categories(name)")
+        .single();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       if (error.code === "PGRST116") {
@@ -94,6 +111,8 @@ export async function PUT(request: NextRequest, { params }: any) {
         sku: data.sku,
         harga: Number(data.price),
         stok: data.stock,
+        satuan: data.unit || 'pcs',
+        unit: data.unit || 'pcs',
         kategori: data.categories?.name || null,
       },
     });
@@ -129,8 +148,8 @@ export async function DELETE(request: NextRequest, { params }: any) {
     // Hapus stock_adjustments (foreign key constraint)
     await supabase.from("stock_adjustments").delete().eq("product_id", id);
 
-    // Hapus transaction_items (foreign key constraint)
-    await supabase.from("transaction_items").delete().eq("product_id", id);
+    // Set product_id ke NULL di transaction_items (product_name snapshot tetap tersimpan)
+    await supabase.from("transaction_items").update({ product_id: null }).eq("product_id", id);
 
     const { error } = await supabase.from("products").delete().eq("id", id);
 

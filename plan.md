@@ -701,3 +701,66 @@ Prioritas rendah, kerjakan setelah alur dasar terbukti stabil:
 | `app/api/bot/webhook/route.ts` | Baru |
 
 Tidak ada file lama yang perlu diubah — fitur ini murni additive, tidak menyentuh flow kasir/checkout yang sudah ada.
+
+---
+
+## Plan: Hapus Produk Lampu Neon (LMP-03) + Fix Bug Kategori
+
+### Konteks
+- Produk `lampu neon` SKU `LMP-03` ada di `admin/products` tapi tidak bisa dihapus, sudah diarsipkan (`is_active=false`) dan muncul di filter `Diarsipkan` dengan badge Arsip. Klik hapus permanen error FK `transaction_items_product_id_fkey` karena sudah ada transaksi pakai produk ini.
+- Bug kedua: Select kategori di `Dashboard > Penjualan 7 Hari Terakhir` tampil UUID `b855cddf-...` bukan nama `Rokok` (lihat screenshot). Penyebab: `admin/page.tsx:195` pakai `<SelectValue placeholder>` tanpa custom render, Base-UI tampilkan `value` mentah.
+
+### Tujuan
+1. Hapus `lampu neon` dari tabel `products` secara permanen tanpa menghapus histori transaksi (histori tetap tampil `product_name = lampu neon`).
+2. Perbaiki bug kategori select agar tampil nama, bukan UUID.
+
+### Prasyarat DB
+- Migrasi `002_product_archive.sql` (`is_active`, `archived_at`) sudah ada, tapi `003_allow_product_hard_delete.sql` belum di-run di Supabase prod. Tanpa ini `product_id` masih `NOT NULL` dan FK `ON DELETE RESTRICT`, hard delete pasti gagal.
+- RLS `transaction_items_update_admin` (dari 003) harus ada agar admin bisa `UPDATE product_id=null`.
+
+### Langkah Hapus Lampu Neon (Aman, Tetap Simpan Histori)
+1. **Verifikasi** (read-only):
+   ```sql
+   SELECT id, name, sku FROM products WHERE sku='LMP-03'; -- catat id
+   SELECT count(*) FROM transaction_items WHERE product_id = '<id_lampu_neon>';
+   SELECT invoice_number, product_name, quantity FROM transaction_items ti JOIN transactions t ON t.id=ti.transaction_id WHERE ti.product_id='<id>' LIMIT 5;
+   ```
+2. **Jalankan migrasi 003 jika belum** (Supabase SQL Editor):
+   ```sql
+   -- isi file supabase/migrations/003_allow_product_hard_delete.sql
+   ALTER TABLE transaction_items ALTER COLUMN product_id DROP NOT NULL;
+   ALTER TABLE transaction_items DROP CONSTRAINT IF EXISTS transaction_items_product_id_fkey;
+   ALTER TABLE transaction_items ADD CONSTRAINT transaction_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL;
+   DROP POLICY IF EXISTS "transaction_items_update_admin" ON transaction_items;
+   CREATE POLICY "transaction_items_update_admin" ON transaction_items FOR UPDATE TO authenticated USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role='admin_inventory')) WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role='admin_inventory'));
+   NOTIFY pgrst, 'reload schema';
+   ```
+3. **Eksekusi hapus** — dua opsi, pilih salah satu:
+   - **Via UI (recommended):** Login admin → `Produk` → filter `Diarsipkan` → `LMP-03` → klik Tong Sampah → Confirm `Hapus permanen...` → `useDeleteProduct` sekarang otomatis `UPDATE transaction_items SET product_id=null WHERE product_id='<id>'` lalu `DELETE FROM products`. Toast `Produk berhasil dihapus permanen`.
+   - **Via SQL manual (fallback):**
+     ```sql
+     BEGIN;
+     UPDATE transaction_items SET product_id = NULL WHERE product_id = '<id_lampu_neon>';
+     DELETE FROM products WHERE id = '<id_lampu_neon>';
+     COMMIT;
+     ```
+4. **Verifikasi:** 
+   - `SELECT * FROM products WHERE sku='LMP-03'` → 0 rows.
+   - `SELECT product_name, product_id FROM transaction_items WHERE product_name='lampu neon' LIMIT 5;` → `product_id` NULL tapi `product_name` tetap `lampu neon`, laporan Excel per kategori masih hitung histori via fallback `Lainnya` atau via `product_name`? Saat ini rekap pakai `product_id->category`, jadi setelah delete kategori jadi `Lainnya` — acceptable. Jika mau tetap kategori, simpan `category snapshot` di `transaction_items` (future).
+   - Cek Kasir POS tidak muncul, cek `admin/products` filter Diarsipkan tidak ada lagi.
+
+### Fix Bug Kategori (Sudah Dieksekusi di Build Mode)
+- **File:** `app/(dashboard)/admin/page.tsx:193`
+- **Sebelum:** `<SelectTrigger><SelectValue placeholder="Semua Kategori"/></SelectTrigger>` → Base-UI fallback tampilkan `value` mentah UUID.
+- **Sesudah:** `<SelectTrigger><span class="flex-1 text-left ...">{chartCategory==='all' ? 'Semua Kategori' : categories.find(c=>c.id===chartCategory)?.name}</span></SelectTrigger>` + icon via `getCategoryVisual`. Sama seperti fix sebelumnya di `admin/products` untuk `Semua Jenis`.
+- **Verifikasi:** `npm run build` sukses, pilih `Rokok` → header `Pendapatan Rokok`, badge dan bar warna `Cigarette` `#b4a08c`, tidak ada UUID.
+
+### Risiko & Mitigasi
+- Hard delete hilangkan link kategori → rekap per kategori untuk transaksi lama jadi `Lainnya`. Mitigasi: jika butuh kategori historis akurat, tambah kolom `category_name_snapshot` di `transaction_items` (tidak wajib sekarang).
+- Jika migrasi 003 belum di-run, hard delete tetap gagal dengan pesan `Jalankan migrasi...` — user tetap bisa pakai Arsip sebagai soft delete (sudah berfungsi tanpa 003).
+
+### Checklist
+- [ ] Run `003_allow_product_hard_delete.sql` di Supabase
+- [ ] Test hapus `LMP-03` via UI Diarsipkan → sukses
+- [ ] Test pilih kategori `Rokok`, `Tisu`, `Semua` di Dashboard → tampil nama bukan UUID
+- [ ] `npm run build` pass (sudah pass 2026-08-29)

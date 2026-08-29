@@ -29,6 +29,16 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
+  const createRedirect = (target: string) => {
+    const url = new URL(target, request.url)
+    const res = NextResponse.redirect(url)
+    // Preserve refreshed auth cookies from supabaseResponse
+    supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
+      res.cookies.set(name, value, options as never)
+    })
+    return res
+  }
+
   // If logged in
   if (user) {
     const { data: profile } = await supabase
@@ -42,30 +52,30 @@ export async function updateSession(request: NextRequest) {
     // Already logged in but trying to access login page → redirect to dashboard
     if (pathname === '/login') {
       const target = role === 'admin_inventory' ? '/admin' : '/kasir'
-      return NextResponse.redirect(new URL(target, request.url))
+      return createRedirect(target)
     }
 
     // Root → redirect to dashboard
     if (pathname === '/') {
       const target = role === 'admin_inventory' ? '/admin' : '/kasir'
-      return NextResponse.redirect(new URL(target, request.url))
+      return createRedirect(target)
     }
 
     // Role-based access control
     if (pathname.startsWith('/kasir') && role !== 'kasir') {
-      return NextResponse.redirect(new URL('/admin', request.url))
+      return createRedirect('/admin')
     }
     if (pathname.startsWith('/admin') && role !== 'admin_inventory') {
-      return NextResponse.redirect(new URL('/kasir', request.url))
+      return createRedirect('/kasir')
     }
   } else {
     // Not logged in → protect dashboard routes
     if (pathname.startsWith('/kasir') || pathname.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/login', request.url))
+      return createRedirect('/login')
     }
     // Root → login
     if (pathname === '/') {
-      return NextResponse.redirect(new URL('/login', request.url))
+      return createRedirect('/login')
     }
   }
 

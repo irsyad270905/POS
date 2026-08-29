@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+import { useQueryClient } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const queryClient = useQueryClient()
   const supabase = createClient()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,14 +43,15 @@ export default function LoginPage() {
 
       toast.success('Login berhasil!', { description: 'Mengalihkan ke dashboard...' })
 
-      if (profile?.role === 'admin_inventory') {
-        router.push('/admin')
-      } else {
-        router.push('/kasir')
-      }
-    }
+      // Clear any stale cache from previous user (admin->kasir bug)
+      queryClient.clear()
 
-    setLoading(false)
+      const target = profile?.role === 'admin_inventory' ? '/admin' : '/kasir'
+      router.push(target)
+      router.refresh()
+    } else {
+      setLoading(false)
+    }
   }
 
   return (

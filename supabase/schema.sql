@@ -53,7 +53,10 @@ CREATE TABLE products (
   price NUMERIC NOT NULL CHECK (price >= 0),
   stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  unit TEXT NOT NULL DEFAULT 'pcs',
   image_url TEXT,
+  is_active BOOLEAN DEFAULT true NOT NULL,
+  archived_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -80,7 +83,7 @@ CREATE TABLE transactions (
 CREATE TABLE transaction_items (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   transaction_id UUID REFERENCES transactions(id) ON DELETE CASCADE NOT NULL,
-  product_id UUID REFERENCES products(id) NOT NULL,
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL,
   product_name TEXT NOT NULL, -- snapshot so it persists even if product is deleted
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   price_at_time NUMERIC NOT NULL CHECK (price_at_time >= 0)

@@ -5,16 +5,19 @@ import { useRouter, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   LogOut, LayoutDashboard, ShoppingCart, Package, Tags, Receipt,
-  ChevronLeft, ChevronRight, Clock, Menu, X
+  ChevronLeft, ChevronRight, Clock, Menu, X, Bot
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useCurrentProfile } from '@/lib/queries/profile'
+import { useQueryClient } from '@tanstack/react-query'
 
 const ADMIN_MENU = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Produk', href: '/admin/products', icon: Package },
   { label: 'Kategori', href: '/admin/categories', icon: Tags },
   { label: 'Riwayat Transaksi', href: '/admin/transactions', icon: Receipt },
+  { label: 'AI Restock', href: '/admin/restock', icon: Bot },
 ]
 
 const KASIR_MENU = [
@@ -26,8 +29,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
-  const [role, setRole] = useState<string | null>(null)
-  const [userName, setUserName] = useState<string | null>(null)
+  const queryClient = useQueryClient()
+  const { data: profile, isLoading: profileLoading, isFetching: profileFetching } = useCurrentProfile()
+  const role = profile?.role ?? null
+  const userName = profile?.full_name ?? null
+  const isProfilePending = profileLoading || (profileFetching && !profile)
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
@@ -50,35 +56,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [])
 
+  // Defence-in-depth: guard against role mismatch (wait for profile to load)
   useEffect(() => {
-    async function loadUser() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase.from('profiles').select('role, full_name').eq('id', user.id).single()
-        if (data) {
-          setRole(data.role)
-          setUserName(data.full_name || user.email?.split('@')[0] || 'User')
-        }
-      }
-    }
-    loadUser()
-  }, [supabase])
-
-  // Defence-in-depth: guard against role mismatch
-  useEffect(() => {
-    if (!role) return
+    if (isProfilePending || !role) return
     const isAdminRoute = pathname.startsWith('/admin')
     const isKasirRoute = pathname.startsWith('/kasir')
-    if (isAdminRoute && role !== 'admin_inventory') router.push('/kasir')
-    if (isKasirRoute && role !== 'kasir') router.push('/admin')
-  }, [role, pathname, router])
+    if (isAdminRoute && role !== 'admin_inventory') router.replace('/kasir')
+    if (isKasirRoute && role !== 'kasir') router.replace('/admin')
+  }, [role, pathname, router, isProfilePending])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
+    queryClient.clear()
     router.push('/login')
+    router.refresh()
   }
 
-  const menu = role === 'admin_inventory' ? ADMIN_MENU : KASIR_MENU
+  const menu = isProfilePending ? [] : (role === 'admin_inventory' ? ADMIN_MENU : KASIR_MENU)
 
   const isActive = (href: string) => {
     if (href === '/admin' || href === '/kasir') return pathname === href
@@ -129,7 +123,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Navigation */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {menu.map((item) => {
+          {isProfilePending ? (
+            <div className="space-y-2 animate-pulse">
+              <div className="h-10 rounded-xl" style={{ background: 'var(--bg-card)' }} />
+              <div className="h-10 rounded-xl" style={{ background: 'var(--bg-card)' }} />
+              <div className="h-10 rounded-xl" style={{ background: 'var(--bg-card)' }} />
+            </div>
+          ) : menu.map((item) => {
             const active = isActive(item.href)
             return (
               <Link
@@ -246,7 +246,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Page Content */}
         <main className="flex-1 p-4 lg:p-6">
-          {children}
+          {isProfilePending ? (
+            <div className="flex items-center justify-center h-[60vh]">
+              <div className="flex flex-col items-center gap-3" style={{ color: 'var(--text-secondary)' }}>
+                <div className="h-8 w-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: '#FF6B35', borderTopColor: 'transparent' }} />
+                <p className="text-sm">Memuat...</p>
+              </div>
+            </div>
+          ) : children}
         </main>
       </div>
     </div>
