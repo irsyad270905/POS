@@ -368,36 +368,36 @@ export default function AdminProductsPage() {
         </div>
         <Dialog open={isOpen} onOpenChange={(o) => { setIsOpen(o); if (!o) resetForm() }}>
           <DialogTrigger render={
-            <Button onClick={handleOpenAddDialog} className="gap-2 shadow-lg btn-primary transition-all active:scale-95 border-0 rounded-xl px-5 h-11 text-sm font-bold text-white">
+            <Button onClick={handleOpenAddDialog} className="w-full sm:w-auto gap-2 shadow-lg btn-primary transition-all active:scale-95 border-0 rounded-xl px-5 h-11 text-sm font-bold text-white justify-center">
               <Plus className="h-4 w-4" /> Tambah Produk
             </Button>
           } />
           <DialogContent
-            className={`${addMode === 'bulk' && !editingId ? 'sm:max-w-5xl md:max-w-6xl' : 'sm:max-w-lg'} rounded-2xl border-0 shadow-2xl transition-all duration-300`}
+            className={`${addMode === 'bulk' && !editingId ? 'max-w-[calc(100%-0.75rem)] sm:max-w-[96vw] md:max-w-5xl lg:max-w-6xl' : 'max-w-[calc(100%-1rem)] sm:max-w-lg'} border-0 shadow-2xl transition-all duration-300`}
             style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)' }}
           >
-            <DialogHeader>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b" style={{ borderColor: 'var(--border)' }}>
-                <div>
-                  <DialogTitle className="text-white font-bold text-lg">
+            <DialogHeader className="pr-7 sm:pr-8">
+              <div className="flex flex-col gap-3 pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
+                <div className="pr-2">
+                  <DialogTitle className="text-white font-bold text-base sm:text-lg leading-tight">
                     {editingId ? 'Edit Produk' : 'Tambah Produk'}
                   </DialogTitle>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-[11px] sm:text-xs mt-1 leading-snug" style={{ color: 'var(--text-secondary)' }}>
                     {editingId
                       ? 'Perbarui rincian produk yang dipilih.'
                       : addMode === 'bulk'
-                      ? 'Tambahkan 10–20+ produk sekaligus dengan tabel input yang dapat di-scroll.'
+                      ? 'Tambahkan 10–20+ produk sekaligus. Di HP tampil kartu, di desktop tabel.'
                       : 'Isi detail satu produk baru ke dalam katalog inventaris.'}
                   </p>
                 </div>
 
                 {/* Tab switcher mode Satu vs Massal (hanya saat create) */}
                 {!editingId && (
-                  <div className="flex items-center p-1 rounded-xl shrink-0" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+                  <div className="flex items-center p-1 rounded-xl w-full sm:w-auto shrink-0 self-start" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                     <button
                       type="button"
                       onClick={() => setAddMode('single')}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
                         addMode === 'single'
                           ? 'btn-primary text-white shadow-md'
                           : 'text-slate-300 hover:text-white hover:bg-white/5'
@@ -408,7 +408,7 @@ export default function AdminProductsPage() {
                     <button
                       type="button"
                       onClick={() => setAddMode('bulk')}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-1.5 rounded-lg text-xs font-bold transition-all ${
                         addMode === 'bulk'
                           ? 'btn-primary text-white shadow-md'
                           : 'text-slate-300 hover:text-white hover:bg-white/5'
@@ -421,9 +421,9 @@ export default function AdminProductsPage() {
               </div>
             </DialogHeader>
 
-            {/* SINGLE MODE */}
+            {/* SINGLE MODE - optimized for mobile */}
             {addMode === 'single' ? (
-              <form onSubmit={handleSave} className="space-y-4 pt-2">
+              <form onSubmit={handleSave} className="space-y-4 pt-3">
                 <div className="space-y-2">
                   <Label className="text-sm" style={{ color: 'var(--text-secondary)' }}>Nama Produk</Label>
                   <Input value={name} onChange={(e) => handleNameChange(e.target.value)} required placeholder="Contoh: Minyak Goreng 1L"
@@ -544,25 +544,25 @@ export default function AdminProductsPage() {
                       className="rounded-xl h-11 border-0" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)', boxShadow: 'inset 0 0 0 1px var(--border)' }} />
                   </div>
                 </div>
-                <DialogFooter className="gap-2 pt-2">
-                  <Button type="button" variant="ghost" className="rounded-xl text-slate-200 hover:text-white hover:bg-white/5 border-0"
+                <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-4 border-t mt-2" style={{ borderColor: 'var(--border)' }}>
+                  <Button type="button" variant="ghost" className="rounded-xl text-slate-200 hover:text-white hover:bg-white/5 border-0 w-full sm:w-auto h-11 sm:h-10 text-sm font-semibold"
                     onClick={() => setIsOpen(false)}>Batal</Button>
-                  <Button type="submit" className="btn-primary text-white font-bold px-6 rounded-xl h-10" disabled={isSaving}>
+                  <Button type="submit" className="btn-primary text-white font-bold px-6 rounded-xl h-11 sm:h-10 w-full sm:w-auto text-sm" disabled={isSaving}>
                     {isSaving ? 'Menyimpan...' : (editingId ? 'Simpan' : 'Tambah')}
                   </Button>
-                </DialogFooter>
+                </div>
               </form>
             ) : (
-              /* BULK MODE */
-              <div className="space-y-4 pt-2">
-                {/* Action Bar Atas */}
-                <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-                  <div className="flex flex-wrap items-center gap-2">
+              /* BULK MODE - responsive: cards on mobile, table on desktop */
+              <div className="space-y-3 sm:space-y-4 pt-3">
+                {/* Action Bar Atas - grid on mobile to avoid cutoff like screenshot */}
+                <div className="flex flex-col gap-3">
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                     <Button
                       type="button"
                       size="sm"
                       onClick={() => handleAddBulkRows(1)}
-                      className="gap-1.5 rounded-xl border-0 h-9 px-3 text-xs font-bold"
+                      className="col-span-1 gap-1.5 rounded-xl border-0 h-10 sm:h-9 px-3 text-xs font-bold justify-center"
                       style={{ background: 'rgba(255,107,53,0.14)', color: '#ff8c42', border: '1px solid rgba(255,107,53,0.25)' }}
                     >
                       <Plus className="h-3.5 w-3.5" /> Tambah 1 Baris
@@ -571,7 +571,7 @@ export default function AdminProductsPage() {
                       type="button"
                       size="sm"
                       onClick={() => handleAddBulkRows(5)}
-                      className="gap-1.5 rounded-xl border-0 h-9 px-3 text-xs font-bold"
+                      className="col-span-1 gap-1.5 rounded-xl border-0 h-10 sm:h-9 px-3 text-xs font-bold justify-center"
                       style={{ background: 'rgba(255,107,53,0.10)', color: '#ffb86a', border: '1px solid rgba(255,107,53,0.20)' }}
                     >
                       <PlusCircle className="h-3.5 w-3.5" /> Tambah 5 Baris
@@ -580,35 +580,36 @@ export default function AdminProductsPage() {
                       type="button"
                       size="sm"
                       onClick={handleAutoGenerateAllSkus}
-                      className="gap-1.5 rounded-xl border-0 h-9 px-3 text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5"
+                      className="col-span-2 sm:col-span-1 sm:w-auto gap-1.5 rounded-xl border-0 h-10 sm:h-9 px-3 text-xs font-semibold text-slate-200 justify-center"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border)' }}
                     >
                       <Sparkles className="h-3.5 w-3.5" style={{ color: '#ffb86a' }} /> Buat Semua SKU
                     </Button>
                   </div>
 
                   {/* Ringkasan Validasi */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center sm:justify-start">
                     {activeBulkRows.length > 0 ? (
                       hasBulkErrors ? (
-                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold" style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)' }}>
-                          <AlertCircle className="h-3.5 w-3.5" /> {activeBulkRows.length - validBulkRows.length} baris perlu diperbaiki
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold w-full sm:w-auto justify-center" style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)' }}>
+                          <AlertCircle className="h-3.5 w-3.5 shrink-0" /> {activeBulkRows.length - validBulkRows.length} baris perlu diperbaiki
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold" style={{ background: 'rgba(16,185,129,0.12)', color: '#6ee7b7', border: '1px solid rgba(16,185,129,0.2)' }}>
-                          <CheckCircle2 className="h-3.5 w-3.5" /> {validBulkRows.length} baris siap disimpan
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold w-full sm:w-auto justify-center" style={{ background: 'rgba(16,185,129,0.12)', color: '#6ee7b7', border: '1px solid rgba(16,185,129,0.2)' }}>
+                          <CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> {validBulkRows.length} baris siap disimpan
                         </span>
                       )
                     ) : (
-                      <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-                        Isi produk pada tabel di bawah
+                      <span className="text-xs text-center sm:text-left w-full" style={{ color: 'var(--text-muted)' }}>
+                        Isi produk pada kartu di bawah — geser ke bawah untuk tambah baris
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Tabel Scrollable */}
+                {/* DESKTOP Tabel — hidden on mobile */}
                 <div
-                  className="overflow-x-auto overflow-y-auto max-h-[50vh] rounded-2xl border"
+                  className="hidden md:block overflow-x-auto overflow-y-auto max-h-[45vh] lg:max-h-[52vh] rounded-2xl border"
                   style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
                 >
                   <Table className="min-w-[850px] relative border-collapse text-xs">
@@ -639,12 +640,9 @@ export default function AdminProductsPage() {
                             }`}
                             style={{ borderColor: 'var(--border)' }}
                           >
-                            {/* # Index */}
                             <TableCell className="text-center font-mono font-bold" style={{ color: 'var(--text-muted)' }}>
                               {index + 1}
                             </TableCell>
-
-                            {/* Status Icon */}
                             <TableCell className="text-center p-2">
                               {!isFilled ? (
                                 <span className="inline-block h-2 w-2 rounded-full bg-slate-600" title="Baris kosong" />
@@ -661,8 +659,6 @@ export default function AdminProductsPage() {
                                 </div>
                               )}
                             </TableCell>
-
-                            {/* Nama Produk */}
                             <TableCell className="p-2">
                               <Input
                                 value={row.name}
@@ -676,8 +672,6 @@ export default function AdminProductsPage() {
                                 }}
                               />
                             </TableCell>
-
-                            {/* SKU */}
                             <TableCell className="p-2">
                               <Input
                                 value={row.sku}
@@ -691,8 +685,6 @@ export default function AdminProductsPage() {
                                 }}
                               />
                             </TableCell>
-
-                            {/* Kategori */}
                             <TableCell className="p-2">
                               <Select value={row.categoryId} onValueChange={(val) => handleBulkRowChange(row.id, 'categoryId', val || '')}>
                                 <SelectTrigger className="h-9 text-xs rounded-lg border-0" style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', boxShadow: 'inset 0 0 0 1px var(--border)' }}>
@@ -709,8 +701,6 @@ export default function AdminProductsPage() {
                                 </SelectContent>
                               </Select>
                             </TableCell>
-
-                            {/* Satuan */}
                             <TableCell className="p-2">
                               <Select value={row.unit} onValueChange={(val) => handleBulkRowChange(row.id, 'unit', val || 'pcs')}>
                                 <SelectTrigger className="h-9 text-xs rounded-lg border-0 uppercase font-bold" style={{ background: 'var(--bg-surface)', color: '#ff8c42', boxShadow: 'inset 0 0 0 1px var(--border)' }}>
@@ -725,8 +715,6 @@ export default function AdminProductsPage() {
                                 </SelectContent>
                               </Select>
                             </TableCell>
-
-                            {/* Harga (Rp) */}
                             <TableCell className="p-2">
                               <Input
                                 type="number"
@@ -742,8 +730,6 @@ export default function AdminProductsPage() {
                                 }}
                               />
                             </TableCell>
-
-                            {/* Stok */}
                             <TableCell className="p-2">
                               <Input
                                 type="number"
@@ -759,8 +745,6 @@ export default function AdminProductsPage() {
                                 }}
                               />
                             </TableCell>
-
-                            {/* Aksi Hapus Baris */}
                             <TableCell className="p-2 text-center">
                               <Button
                                 type="button"
@@ -781,16 +765,176 @@ export default function AdminProductsPage() {
                   </Table>
                 </div>
 
-                {/* Footer Modal Massal */}
-                <DialogFooter className="flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
-                  <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    Total: <strong className="text-white">{bulkRows.length} baris</strong> ({validBulkRows.length} siap disimpan)
+                {/* MOBILE Cards — visible only on Android / small screens */}
+                <div className="md:hidden space-y-3">
+                  {bulkRows.map((row, index) => {
+                    const validation = getRowValidation(row, bulkRows)
+                    const isFilled = !validation.isTotallyEmpty
+                    const rowError = isFilled && !validation.isValid
+                    return (
+                      <div
+                        key={row.id}
+                        className={`rounded-2xl border p-3 space-y-3 transition-colors ${rowError ? 'border-red-500/30 bg-red-500/[0.06]' : 'bg-[var(--bg-card)]'}`}
+                        style={{ borderColor: rowError ? 'rgba(239,68,68,0.3)' : 'var(--border)' }}
+                      >
+                        {/* Card Header: number + status + delete */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <span className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-black shrink-0" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
+                              {index + 1}
+                            </span>
+                            {!isFilled ? (
+                              <span className="text-[11px] px-2 py-1 rounded-full font-semibold" style={{ background: 'rgba(100,116,139,0.15)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>Kosong</span>
+                            ) : validation.isValid ? (
+                              <span className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-full font-bold" style={{ background: 'rgba(16,185,129,0.14)', color: '#6ee7b7', border: '1px solid rgba(16,185,129,0.2)' }}><CheckCircle2 className="h-3 w-3" /> Valid</span>
+                            ) : (
+                              <span className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-full font-bold" style={{ background: 'rgba(239,68,68,0.14)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.2)' }}><AlertCircle className="h-3 w-3" /> Perbaiki</span>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveBulkRow(row.id)}
+                            className="h-8 w-8 rounded-full hover:bg-red-500/10 border-0 shrink-0"
+                            style={{ color: '#fca5a5' }}
+                            title="Hapus baris"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+
+                        {/* Nama Produk */}
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold tracking-wide" style={{ color: 'var(--text-secondary)' }}>Nama Produk <span className="text-red-400">*</span></Label>
+                          <Input
+                            value={row.name}
+                            onChange={(e) => handleBulkRowChange(row.id, 'name', e.target.value)}
+                            placeholder="Contoh: Beras 5KG"
+                            className="h-11 text-sm rounded-xl border-0 font-medium"
+                            style={{
+                              background: 'var(--bg-surface)',
+                              color: 'var(--text-primary)',
+                              boxShadow: rowError && !row.name.trim() ? 'inset 0 0 0 1.5px #ef4444' : 'inset 0 0 0 1px var(--border)',
+                            }}
+                          />
+                        </div>
+
+                        {/* SKU */}
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-bold tracking-wide" style={{ color: 'var(--text-secondary)' }}>SKU <span className="text-red-400">*</span></Label>
+                          <Input
+                            value={row.sku}
+                            onChange={(e) => handleBulkRowChange(row.id, 'sku', e.target.value.toUpperCase())}
+                            placeholder="Otomatis dari nama / ketik manual"
+                            className="h-11 text-sm rounded-xl border-0 font-mono font-bold tracking-wide"
+                            style={{
+                              background: 'var(--bg-surface)',
+                              color: '#ff8c42',
+                              boxShadow: rowError && (!row.sku.trim() || validation.errors.some(e => e.includes('SKU'))) ? 'inset 0 0 0 1.5px #ef4444' : 'inset 0 0 0 1px var(--border)',
+                            }}
+                          />
+                        </div>
+
+                        {/* Kategori + Satuan */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-bold" style={{ color: 'var(--text-secondary)' }}>Kategori</Label>
+                            <Select value={row.categoryId} onValueChange={(val) => handleBulkRowChange(row.id, 'categoryId', val || '')}>
+                              <SelectTrigger className="h-11 text-sm rounded-xl border-0" style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', boxShadow: 'inset 0 0 0 1px var(--border)' }}>
+                                <span className="truncate">
+                                  {row.categoryId ? categories.find(c => c.id === row.categoryId)?.name || 'Pilih' : 'Pilih kategori'}
+                                </span>
+                              </SelectTrigger>
+                              <SelectContent style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-strong)' }}>
+                                {categories.map(c => (
+                                  <SelectItem key={c.id} value={c.id}>
+                                    {c.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-bold" style={{ color: 'var(--text-secondary)' }}>Satuan</Label>
+                            <Select value={row.unit} onValueChange={(val) => handleBulkRowChange(row.id, 'unit', val || 'pcs')}>
+                              <SelectTrigger className="h-11 text-sm rounded-xl border-0 uppercase font-bold" style={{ background: 'var(--bg-surface)', color: '#ff8c42', boxShadow: 'inset 0 0 0 1px var(--border)' }}>
+                                <span className="truncate">{UNIT_PRESETS.find(u=>u.value===row.unit)?.label?.split(' ')[0] || row.unit}</span>
+                              </SelectTrigger>
+                              <SelectContent style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-strong)' }}>
+                                {UNIT_PRESETS.map(u => (
+                                  <SelectItem key={u.value} value={u.value}>
+                                    {u.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        {/* Harga + Stok */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-bold" style={{ color: 'var(--text-secondary)' }}>Harga (Rp) <span className="text-red-400">*</span></Label>
+                            <Input
+                              type="number"
+                              inputMode="numeric"
+                              min="0"
+                              value={row.price}
+                              onChange={(e) => handleBulkRowChange(row.id, 'price', e.target.value)}
+                              placeholder="15000"
+                              className="h-11 text-sm rounded-xl border-0 text-left font-bold"
+                              style={{
+                                background: 'var(--bg-surface)',
+                                color: 'white',
+                                boxShadow: rowError && (isNaN(parseFloat(row.price)) || parseFloat(row.price) <= 0) ? 'inset 0 0 0 1.5px #ef4444' : 'inset 0 0 0 1px var(--border)',
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-bold" style={{ color: 'var(--text-secondary)' }}>Stok</Label>
+                            <Input
+                              type="number"
+                              inputMode="numeric"
+                              min="0"
+                              value={row.stock}
+                              onChange={(e) => handleBulkRowChange(row.id, 'stock', e.target.value)}
+                              placeholder="0"
+                              className="h-11 text-sm rounded-xl border-0 text-center font-bold"
+                              style={{
+                                background: 'var(--bg-surface)',
+                                color: 'white',
+                                boxShadow: 'inset 0 0 0 1px var(--border)',
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Error messages inline for mobile */}
+                        {rowError && (
+                          <div className="rounded-xl px-3 py-2.5 space-y-1" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)' }}>
+                            {validation.errors.map((err, i) => (
+                              <div key={i} className="text-[11px] font-semibold leading-tight flex items-start gap-1.5" style={{ color: '#fca5a5' }}>
+                                <span className="mt-0.5 h-1 w-1 rounded-full bg-red-400 shrink-0" /> {err}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Footer Modal Massal - stacked on mobile */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
+                  <div className="text-xs text-center sm:text-left" style={{ color: 'var(--text-secondary)' }}>
+                    Total: <strong className="text-white">{bulkRows.length} baris</strong> <span className="hidden sm:inline">({validBulkRows.length} siap disimpan)</span><span className="sm:hidden">• {validBulkRows.length} valid</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                     <Button
                       type="button"
                       variant="ghost"
-                      className="rounded-xl text-slate-200 hover:text-white hover:bg-white/5 border-0 text-xs font-semibold"
+                      className="rounded-xl text-slate-200 hover:text-white hover:bg-white/5 border-0 text-sm font-semibold h-11 sm:h-10 w-full sm:w-auto"
                       onClick={() => setIsOpen(false)}
                     >
                       Batal
@@ -799,12 +943,12 @@ export default function AdminProductsPage() {
                       type="button"
                       onClick={handleSaveBulk}
                       disabled={isSaving || activeBulkRows.length === 0 || hasBulkErrors}
-                      className="btn-primary text-white font-bold px-5 rounded-xl h-10 text-xs gap-2"
+                      className="btn-primary text-white font-bold px-5 rounded-xl h-11 sm:h-10 text-sm gap-2 w-full sm:w-auto justify-center"
                     >
-                      {isSaving ? 'Menyimpan Semua...' : `Simpan ${validBulkRows.length} Produk`}
+                      {isSaving ? 'Menyimpan...' : `Simpan ${validBulkRows.length} Produk`}
                     </Button>
                   </div>
-                </DialogFooter>
+                </div>
               </div>
             )}
           </DialogContent>
@@ -835,8 +979,8 @@ export default function AdminProductsPage() {
         </Select>
       </div>
 
-      {/* Table — no white outline, warm */}
-      <Card className="border-0 overflow-hidden rounded-2xl shadow-lg" style={{ background: 'var(--bg-card)', boxShadow: '0 8px 32px rgba(0,0,0,0.35)' }}>
+      {/* List Produk — desktop table, mobile cards for Android */}
+      <Card className="hidden sm:block border-0 overflow-hidden rounded-2xl shadow-lg" style={{ background: 'var(--bg-card)', boxShadow: '0 8px 32px rgba(0,0,0,0.35)' }}>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -871,7 +1015,6 @@ export default function AdminProductsPage() {
                     <TableRow key={p.id} className="group border-b hover:bg-white/[0.02] transition-colors"
                       style={{ borderColor: 'var(--border)' }}
                     >
-                      {/* Jenis icon — per jenis default warm */}
                       <TableCell>
                         <div className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: visual.iconBg, border: `1px solid ${visual.iconBorder}` }}>
                           <Icon className="h-5 w-5" style={{ color: visual.iconColor }} />
@@ -910,6 +1053,59 @@ export default function AdminProductsPage() {
           </Table>
         </div>
       </Card>
+
+      {/* Mobile Cards — Android optimized, no horizontal scroll */}
+      <div className="sm:hidden space-y-3">
+        {loading ? (
+          <div className="text-center py-10 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Memuat...</div>
+        ) : filtered.length === 0 ? (
+          <Card className="border-0 rounded-2xl p-8 text-center" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
+            <div className="inline-flex p-4 rounded-full mb-3" style={{ background: 'rgba(255,107,53,0.08)', border: '1px solid var(--border)' }}>
+              <PackageSearch className="h-10 w-10 opacity-40" style={{ color: '#ff6b35' }} />
+            </div>
+            <h3 className="text-base font-bold text-white">Produk Tidak Ditemukan</h3>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Coba ubah filter atau tambah produk baru.</p>
+          </Card>
+        ) : (
+          filtered.map((p) => {
+            const visual = getCategoryVisual(p.categories?.name)
+            const Icon = visual.icon
+            const pUnit = p.unit || 'pcs'
+            return (
+              <div key={p.id} className="rounded-2xl border p-4 space-y-3 shadow-md" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)', boxShadow: '0 4px 20px rgba(0,0,0,0.25)' }}>
+                <div className="flex gap-3 items-start">
+                  <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: visual.iconBg, border: `1px solid ${visual.iconBorder}` }}>
+                    <Icon className="h-6 w-6" style={{ color: visual.iconColor }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-white text-[15px] leading-tight truncate pr-2">{p.name}</div>
+                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                      <span className="font-mono text-xs font-bold" style={{ color: '#ff8c42' }}>{p.sku}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0" style={{ background: 'rgba(255,107,53,0.1)', color: '#ff8c42', border: '1px solid rgba(255,107,53,0.2)' }}>
+                        {pUnit}
+                      </span>
+                    </div>
+                    <div className="text-sm font-black text-white mt-1.5">Rp {p.price.toLocaleString('id-ID')}</div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
+                  <div className="scale-90 origin-left">
+                    {stockBadge(p.stock)}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border-0 hover:bg-white/5" style={{ color: '#ffb86a', background: 'rgba(255,184,106,0.08)', border: '1px solid rgba(255,184,106,0.15)' }} onClick={() => handleOpenEdit(p)} title="Edit">
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border-0 hover:bg-red-500/10" style={{ color: '#fca5a5', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)' }} onClick={() => handleDelete(p.id, p.name)} title="Hapus" disabled={deleteProduct.isPending}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )
+          })
+        )}
+      </div>
     </div>
   )
 }
