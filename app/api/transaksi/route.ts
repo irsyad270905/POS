@@ -3,11 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false } }
-);
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error("Supabase env belum dikonfigurasi di Vercel")
+  return createClient(url, key, { auth: { persistSession: false } })
+}
 
 // GET - List transaksi + filter by date
 export async function GET(request: NextRequest) {
@@ -15,6 +16,7 @@ export async function GET(request: NextRequest) {
   const date = searchParams.get("date"); // YYYY-MM-DD
 
   try {
+    const supabase = getSupabase()
 
     let query = supabase
       .from("transactions")

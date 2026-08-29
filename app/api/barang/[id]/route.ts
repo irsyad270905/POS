@@ -3,15 +3,17 @@ import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false } }
-);
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error("Supabase env belum dikonfigurasi di Vercel")
+  return createClient(url, key, { auth: { persistSession: false } })
+}
 
 // GET - Detail barang
 export async function GET(request: NextRequest, { params }: any) {
   try {
+    const supabase = getSupabase()
     const { id } = await params;
 
     const { data, error } = await supabase
@@ -46,6 +48,7 @@ export async function GET(request: NextRequest, { params }: any) {
 // PUT - Update barang
 export async function PUT(request: NextRequest, { params }: any) {
   try {
+    const supabase = getSupabase()
     const { id } = await params;
     const body = await request.json();
 
@@ -124,6 +127,7 @@ export async function PUT(request: NextRequest, { params }: any) {
 // DELETE - Hapus barang
 export async function DELETE(request: NextRequest, { params }: any) {
   try {
+    const supabase = getSupabase()
     const { id } = await params;
 
     // Cek barang dulu
